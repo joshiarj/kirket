@@ -13,16 +13,24 @@ import json
 import pandas as pd
 import numpy as np
 import datapull
-import os 
+import os
+import matplotlib.pyplot as plt
 
-batsman = datapull.find_player_matches('44936')
+# Player IDs:
+# Virat Kohli - 253802
+# Joe Root = 303669
+# ABDV = 44936
+# Kane Williamson= 277906
+# Steven Smith = 267192
+# Rohit Sharma = 34102
+player_id = '253802'
+batsman = datapull.find_player_matches(player_id)
 
 final_frame = pd.DataFrame()
 
-for game_id in batsman[1:8]:
-	
-    innings1 = requests.get('http://www.espncricinfo.com/ci/engine/match/gfx/%s.json?inning=1;template=wagon'%(game_id))
-    innings2 = requests.get('http://www.espncricinfo.com/ci/engine/match/gfx/%s.json?inning=2;template=wagon'%(game_id))
+for game_id in batsman[1:10]:
+    innings1 = requests.get('http://www.espncricinfo.com/ci/engine/match/gfx/%s.json?inning=1;template=wagon' % game_id)
+    innings2 = requests.get('http://www.espncricinfo.com/ci/engine/match/gfx/%s.json?inning=2;template=wagon' % game_id)
             
     data_dict = json.loads(innings1.content)
     data_dict2 = json.loads(innings2.content)    
@@ -45,7 +53,7 @@ for game_id in batsman[1:8]:
         
     df = df.drop('runs', axis=1)
     
-    df = df[df['batsman'] == '44936']
+    df = df[df['batsman'] == player_id]
     
     df = df.reset_index(drop=True)
     
@@ -62,5 +70,6 @@ except:
 
 data.to_csv("playerdata/AbdV.csv")
 
-#Pandas plot to see if the thing works
-
+# Pandas plot to see if the thing works
+data.plot(x='ball_no', y='runs_batter')
+plt.show()
